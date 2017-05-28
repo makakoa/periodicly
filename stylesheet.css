@@ -1,0 +1,45 @@
+body {
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #000;
+    font-family: "Nunito";
+}
+
+#periodic {
+    margin: 0;
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    opacity: 0.5;
+}
+
+#main {
+    position: absolute;
+}
+
+#reference {
+    transition: transform 1s;
+    position: absolute;
+    transform: translate3d(0, 0, 0);
+}
+
+.item {
+    transition: transform 1s;
+    position: absolute;
+    transform: translate3d(0, 0, 0);
+    box-sizing: border-box;
+    height: 160px;
+    width: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    color: #fff;
+    background-color: #33b;
+    opacity: 0.75;
+}
