@@ -1,4 +1,7 @@
 body {
+    /* image from wallhaven.com */
+    background: url(wallhaven-64348.png) no-repeat center center fixed;
+    background-size: cover;
     overflow: hidden;
     margin: 0;
     padding: 0;
@@ -59,10 +62,36 @@ body {
     height: 160px;
     width: 120px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 28px;
     color: #fff;
     background-color: #33b;
     opacity: 0.75;
+}
+.item:hover {
+    background-color: #91befb;
+}
+
+.item .name {
+    margin: 15px 0;
+    font-size: 36px;
+}
+
+.item .atomic-num {
+    font-size: 16px;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+}
+
+.item .atomic-weight {
+    font-size: 16px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.item .item-description {
+    font-size: 12px;
 }

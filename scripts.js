@@ -5,7 +5,7 @@ var ref = { x: 0, y: 0, z: -1000, rx: 0, ry: 0, rz: 0 };
 var main = document.getElementById('main');
 function centerMain() {
   main.style.transform = [
-    'translate(', window.innerWidth / 2, 'px,', window.innerHeight / 2,'px)'
+    'translate(', window.innerWidth / 2 - 50, 'px,', window.innerHeight / 2,'px)'
   ].join('');
 }
 window.onresize = centerMain;
@@ -26,8 +26,7 @@ for (var i = 0; i < items.length; i++) {
     z: 0,
     rx: 0,
     ry: 0,
-    rz: 0,
-    text: randomItem('ABCDEFGHIJKLMNOPQRSTUVWXYZ') + randomItem('aeiouy')
+    rz: 0
   };
 }
 
@@ -35,28 +34,80 @@ for (var i = 0; i < items.length; i++) {
 items.forEach(function(item) {
   var el = document.createElement('div');
   el.className = 'item';
-  el.innerText = item.text + (item.id + 1);
+
+  var name = document.createElement('div');
+  name.className = 'name';
+  name.innerText = randomItem('ABCDEFGHIJKLMNOPQRSTUVWXYZ')+randomItem('aeiouy');
+  el.appendChild(name);
+  
+  var aNum = document.createElement('div');
+  aNum.className = 'atomic-num';
+  aNum.innerText = item.id + 1;
+  el.appendChild(aNum);
+
+  var aWeight = document.createElement('div');
+  aWeight.className = 'atomic-weight';
+  aWeight.innerText = item.id + parseFloat((Math.random() * 2).toFixed(3));
+  el.appendChild(aWeight);  
+  
+  var desc = document.createElement('div');
+  desc.className = 'item-description';
+  desc.innerText = 'fake element';
+  el.appendChild(desc);
+  
   main.appendChild(el);
   el.addEventListener('click', function(e) {
-    console.log('click', item);
-    lookAt(item.x + 70, item.y + 90, item.z);
+    lookAt(item);
     e.stopPropagation();
   });
   item.el = el;
 });
 
 // Structure logic
-var currentStructure = 'table';
+var currentStructure = 'spiral';
 var structures = {
+  spiral: {
+    label: document.getElementById('spiral-view'),
+    space: 30,
+    periods: 5,
+    resetView: function() {
+      ref.x = -300;
+      ref.y = -3000;
+      ref.z = -2300;
+      ref.rx = 50;
+      ref.ry = 0;
+      ref.rz = 50;
+    },
+    layout: function() {
+      
+      var counter = 0;
+      var theta = 0;
+      while (items[counter]) {
+        // var theta = (counter / items.length) * 2 * Math.PI * this.periods;
+        theta += (1 / (counter + 10)) * Math.PI * 2;
+        var sinTheta = Math.sin(theta);
+        var cosTheta = Math.cos(theta);
+        items[counter].x = (counter + 5) * this.space * cosTheta;
+        items[counter].y = (counter + 5) * this.space * sinTheta;
+        items[counter].z = 0;
+        items[counter].rx = 0;
+        items[counter].ry = 0;
+        items[counter].rz = (theta * 180 / Math.PI - 90) % 360;
+        counter++;
+      }
+
+    }
+  },
+  
   shifting: {
     label: document.getElementById('shifting-view'),
     space: 100,
     shrink: 5,
     resetView: function() {
       var gridSize = this.space * items.length / this.shrink;
-      ref.x = -gridSize / 2 - 400;
+      ref.x = -gridSize / 2 + 700;
       ref.y = -gridSize / 2;
-      ref.z = -gridSize / 2;
+      ref.z = -gridSize;
       ref.rx = 0;
       ref.ry = 30;
       ref.rz = 0;
@@ -115,9 +166,9 @@ var structures = {
     radius: 800,
     resetView: function() {
       ref.x = 0;
-      ref.y = -this.radius;
+      ref.y = -this.radius
       ref.z = -2000;
-      ref.rx = 0;
+      ref.rx = -5;
       ref.ry = 0;
       ref.rz = 0;
     },
@@ -206,7 +257,7 @@ var structures = {
         items[counter].y = Math.floor(counter / rowLength) * 180;
         items[counter].z = r * sinTheta;
         items[counter].rx = 0;
-        items[counter].ry = 90 - theta;
+        items[counter].ry = 270 - theta;
         items[counter].rz = 0;
         counter++;
       }
@@ -266,10 +317,13 @@ function defaultView() {
   structures[currentStructure].resetView();
 }
 
-function lookAt(x, y, z) {
-  ref.x = -x;
-  ref.y = -y;
-  ref.z = 200 + z;
+function lookAt(item) {
+  ref.x = -item.x;
+  ref.y = -item.y;
+  ref.z = -item.z + 500;
+  ref.rx = -item.rx;
+  ref.ry = -item.ry;
+  ref.rz = -item.rz;
 }
 
 function renderItem(item) {
@@ -280,10 +334,10 @@ var perspective = 1000;
 function set3d(el, d) {
   el.style.transform = [
     'perspective(' + perspective + 'px) ',
-    'translate3d(', ref.x, 'px,', ref.y, 'px,', ref.z, 'px) ',
-    'rotateY(' + ((ref.ry || 0)) + 'deg) ',
-    'rotateX(' + ((ref.rx || 0)) + 'deg) ',
     'rotateZ(' + ((ref.rz || 0)) + 'deg) ',
+    'rotateX(' + ((ref.rx || 0)) + 'deg) ',
+    'rotateY(' + ((ref.ry || 0)) + 'deg) ',
+    'translate3d(', ref.x, 'px,', ref.y, 'px,', ref.z, 'px) ',
     'translate3d(', d.x, 'px,', d.y, 'px,', d.z, 'px) ',
     'rotateY(' + ((d.ry || 0)) + 'deg) ',
     'rotateX(' + ((d.rx || 0)) + 'deg) ',
@@ -294,15 +348,7 @@ function set3d(el, d) {
 // Begin
 setStructure(currentStructure);
 
-// dev
-var originEl = document.createElement('div');
-originEl.innerText = 'origin';
-originEl.style.backgroundColor = 'white';
-main.appendChild(originEl);
-var origin = {el: originEl, x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0};
-
 function renderAll() {
-  renderItem(origin);
   items.forEach(renderItem);
 }
 var rloop = setInterval(renderAll, 1000 / 30); // 30 fps
@@ -337,4 +383,7 @@ structures.sphere.label.addEventListener('click', function() {
 });
 structures.shifting.label.addEventListener('click', function() {
   setStructure('shifting');
+});
+structures.spiral.label.addEventListener('click', function() {
+  setStructure('spiral');
 });
