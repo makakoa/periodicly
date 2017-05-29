@@ -46,8 +46,70 @@ items.forEach(function(item) {
 });
 
 // Structure logic
-var currentStructure = 'sphere';
+var currentStructure = 'shifting';
 var structures = {
+  shifting: {
+    label: document.getElementById('shifting-view'),
+    space: 100,
+    shrink: 5,
+    resetView: function() {
+      var gridSize = this.space * items.length / this.shrink;
+      ref.x = -gridSize / 2;
+      ref.y = -gridSize / 2;
+      ref.z = -gridSize / 2;
+      ref.rx = 0;
+      ref.ry = 0;
+      ref.rz = 0;
+    },
+    layout: function() {
+      // dim ^ 3 cube, set to item length so grid is always large enough
+      var dim = Math.floor(items.length / this.shrink);
+      var grid = Array(dim);
+      for (var x = 0; x < dim; x++) {
+        grid[x] = Array(dim);
+        for (var y = 0; y < dim; y++) {
+          grid[x][y] = Array(dim).fill(false);
+        }
+      }
+      var space = this.space;
+      
+      var counter = 0;
+      while (items[counter]) {
+        var x = Math.floor(Math.random() * dim);
+        var y = Math.floor(Math.random() * dim);
+        var z = Math.floor(Math.random() * dim);
+        if (!grid[x][y][z]) {
+          items[counter].x = x * space;
+          items[counter].y = y * space;
+          items[counter].z = z * space;
+          items[counter].rx = 0;
+          items[counter].ry = 0;
+          items[counter].rz = 0;
+          grid[x][y][z] = items[counter];
+          counter++;
+        }
+      }
+      var shift = setInterval(function() {
+        if (currentStructure !== 'shifting') clearInterval(shift);
+        var item = randomItem(items);
+        var x = item.x / space;
+        var y = item.y / space;
+        var z = item.z / space;
+        var newX = x, newY = y, newZ = z;
+        while(grid[newX][newY][newZ]) {
+          newX = Math.floor(Math.random() * dim);
+          newY = Math.floor(Math.random() * dim);
+          newZ = Math.floor(Math.random() * dim);
+        }
+        grid[x][y][z] = false;
+        item.x = newX * space;
+        item.y = newY * space;
+        item.z = newZ * space;
+        grid[newX][newY][newZ] = item;
+      }, 200);
+    }
+  },
+  
   sphere: {
     label: document.getElementById('sphere-view'),
     radius: 800,
@@ -270,4 +332,7 @@ structures.helix.label.addEventListener('click', function() {
 });
 structures.sphere.label.addEventListener('click', function() {
   setStructure('sphere');
+});
+structures.shifting.label.addEventListener('click', function() {
+  setStructure('shifting');
 });
