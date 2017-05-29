@@ -46,9 +46,50 @@ items.forEach(function(item) {
 });
 
 // Structure logic
-var currentStructure = 'helix';
+var currentStructure = 'sphere';
 var structures = {
+  sphere: {
+    label: document.getElementById('sphere-view'),
+    radius: 800,
+    resetView: function() {
+      ref.x = 0;
+      ref.y = -this.radius;
+      ref.z = -2000;
+      ref.rx = 0;
+      ref.ry = 0;
+      ref.rz = 0;
+    },
+    layout: function() {
+      var rows = 7;
+      var rowSplits = [1, 2, 3, 4, 3, 2, 1]; // 16ths
+      var counter = 0;
+      for (var rowNum = 0; rowNum < rowSplits.length; rowNum++) {
+        var deltaY = (rowNum) / (rows-1) * 2 - 1; // height from midsphere
+        var thetaY = Math.asin(deltaY * 0.95);
+        var rowLength = Math.ceil(items.length / 16 * rowSplits[rowNum]);
+        var rowCounter = 0;
+        while (rowCounter < rowLength) {
+          if (!items[counter]) break;
+          var theta = Math.floor(((rowCounter / rowLength) % 1) * 360);
+          var cosTheta = Math.cos(theta / 180 * Math.PI);
+          var sinTheta = Math.sin(theta / 180 * Math.PI);
+          var rAdj = (this.radius - 200) * Math.cos(thetaY) + 200;
+          items[counter].x = rAdj * cosTheta;
+          items[counter].y = rowNum * this.radius / 3;
+          items[counter].z = rAdj * sinTheta;
+          items[counter].rx = -thetaY * 180 / Math.PI; // * sinTheta;
+          items[counter].ry = (90 - theta);
+          items[counter].rz = 0;
+          // items[counter].rz = thetaY * cosTheta * 180 / Math.PI;
+          counter++;
+          rowCounter++;
+        }
+      }
+    }
+  },
+  
   helix: {
+    label: document.getElementById('helix-view'),
     radius: 500,
     perLoop: 20.3,
     stretch: 20,
@@ -78,7 +119,9 @@ var structures = {
       }
     }
   },
+  
   halloffame: {
+    label: document.getElementById('hall-of-fame-view'),
     radius: 1000,
     rows: 4,
     resetView: function() {
@@ -108,7 +151,9 @@ var structures = {
       }
     }
   },
+  
   table: {
+    label: document.getElementById('table-view'),
     cols: 18,
     resetView: function() {
       ref.x = -1250; // middle x
@@ -151,7 +196,9 @@ var structures = {
 function setStructure(type) {
   structures[type].layout();
   structures[type].resetView();
+  structures[currentStructure].label.className = '';
   currentStructure = type;
+  structures[type].label.className = 'selected';
 }
 
 function defaultView() {
@@ -168,15 +215,16 @@ function renderItem(item) {
   set3d(item.el, item);
 }
 
+var perspective = 1000;
 function set3d(el, d) {
   var x = ref.x + d.x;
   var y = ref.y + d.y;
   var z = ref.z + d.z;
   el.style.transform = [
-    'perspective(1000px) ',
+    'perspective(' + perspective + 'px) ',
     'translate3d(', x, 'px,', y, 'px,', z, 'px) ',
-    'rotateX(' + ((d.rx || 0)) + 'deg) ',
     'rotateY(' + ((d.ry || 0)) + 'deg) ',
+    'rotateX(' + ((d.rx || 0)) + 'deg) ',
     'rotateZ(' + ((d.rz || 0)) + 'deg) '
   ].join('');
 }
@@ -191,12 +239,11 @@ originEl.style.backgroundColor = 'white';
 main.appendChild(originEl);
 var origin = {el: originEl, x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0};
 
-// use requestAnimationFrame?
-setInterval(function() {
+function renderAll() {
   renderItem(origin);
   items.forEach(renderItem);
-}, 1000 / 30); // 30 fps
-
+}
+var rloop = setInterval(renderAll, 1000 / 30); // 30 fps
 
 // Controls
 var speed = 100;
@@ -212,12 +259,15 @@ document.addEventListener('keydown', function (event) {
   if (k === 'q') ref.ry -= speed / 36;
 }, false);
 
-document.getElementById('table-view').addEventListener('click', function() {
+structures.table.label.addEventListener('click', function() {
   setStructure('table');
 });
-document.getElementById('hall-of-fame-view').addEventListener('click', function() {
+structures.halloffame.label.addEventListener('click', function() {
   setStructure('halloffame');
 });
-document.getElementById('helix-view').addEventListener('click', function() {
+structures.helix.label.addEventListener('click', function() {
   setStructure('helix');
+});
+structures.sphere.label.addEventListener('click', function() {
+  setStructure('sphere');
 });

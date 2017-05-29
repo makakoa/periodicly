@@ -12,21 +12,36 @@ body {
 }
 
 #bottom {
+    background-color: rgba(100, 100, 100, 0.5);
     z-index: 100000;
     color: white;
     margin: 0;
+    padding: 10px;
     position: fixed;
-    bottom: 15px;
-    left: 15px;
-    right: 15px;
+    bottom: 0;
+    left: 0;
+    right: 0;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
+    align-items: center;
     opacity: 1;
+}
+
+#bottom h1,h2 {
+    transition: 300ms;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 0;
 }
 
 #bottom h2:hover {
     cursor: pointer;
-    color: #4278ff;
+    color: #91befb;
+}
+
+#bottom h2.selected {
+    border: 1px solid;
+    color: #7c7cff;
 }
 
 #main {
@@ -38,6 +53,7 @@ body {
     transition: all 1s;
     position: absolute;
     transform: translate3d(0, 0, 0);
+    transform-origin: 50% 50%;
     box-sizing: border-box;
     height: 160px;
     width: 120px;
