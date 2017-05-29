@@ -348,10 +348,11 @@ function set3d(el, d) {
 // Begin
 setStructure(currentStructure);
 
-function renderAll() {
+function renderLoop() {
   items.forEach(renderItem);
+  requestAnimationFrame(renderLoop);
 }
-var rloop = setInterval(renderAll, 1000 / 30); // 30 fps
+renderLoop();
 
 // Controls
 var speed = 100;
@@ -367,6 +368,10 @@ document.addEventListener('keydown', function (event) {
   if (k === 'd') ref.x -= speed;
   if (k === 'e') ref.z += speed;
   if (k === 'q') ref.z -= speed;
+  if (k === ' ') {
+    var structs = Object.keys(structures);
+    setStructure(structs[(structs.indexOf(currentStructure)+1)%structs.length]);
+  }
 }, false);
 
 structures.table.label.addEventListener('click', function() {
