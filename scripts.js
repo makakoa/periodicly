@@ -46,7 +46,7 @@ items.forEach(function(item) {
 });
 
 // Structure logic
-var currentStructure = 'shifting';
+var currentStructure = 'table';
 var structures = {
   shifting: {
     label: document.getElementById('shifting-view'),
@@ -54,11 +54,11 @@ var structures = {
     shrink: 5,
     resetView: function() {
       var gridSize = this.space * items.length / this.shrink;
-      ref.x = -gridSize / 2;
+      ref.x = -gridSize / 2 - 400;
       ref.y = -gridSize / 2;
       ref.z = -gridSize / 2;
       ref.rx = 0;
-      ref.ry = 0;
+      ref.ry = 30;
       ref.rz = 0;
     },
     layout: function() {
@@ -142,7 +142,6 @@ var structures = {
           items[counter].rx = -thetaY * 180 / Math.PI; // * sinTheta;
           items[counter].ry = (90 - theta);
           items[counter].rz = 0;
-          // items[counter].rz = thetaY * cosTheta * 180 / Math.PI;
           counter++;
           rowCounter++;
         }
@@ -189,7 +188,7 @@ var structures = {
     resetView: function() {
       ref.x = 0;
       ref.y = -(this.rows * 90);
-      ref.z = -2000;
+      ref.z = this.radius / 2;
       ref.rx = 0;
       ref.ry = 0;
       ref.rz = 0;
@@ -279,12 +278,13 @@ function renderItem(item) {
 
 var perspective = 1000;
 function set3d(el, d) {
-  var x = ref.x + d.x;
-  var y = ref.y + d.y;
-  var z = ref.z + d.z;
   el.style.transform = [
     'perspective(' + perspective + 'px) ',
-    'translate3d(', x, 'px,', y, 'px,', z, 'px) ',
+    'translate3d(', ref.x, 'px,', ref.y, 'px,', ref.z, 'px) ',
+    'rotateY(' + ((ref.ry || 0)) + 'deg) ',
+    'rotateX(' + ((ref.rx || 0)) + 'deg) ',
+    'rotateZ(' + ((ref.rz || 0)) + 'deg) ',
+    'translate3d(', d.x, 'px,', d.y, 'px,', d.z, 'px) ',
     'rotateY(' + ((d.ry || 0)) + 'deg) ',
     'rotateX(' + ((d.rx || 0)) + 'deg) ',
     'rotateZ(' + ((d.rz || 0)) + 'deg) '
@@ -311,14 +311,16 @@ var rloop = setInterval(renderAll, 1000 / 30); // 30 fps
 var speed = 100;
 document.addEventListener('keydown', function (event) {
   var k = event.key;
-  if (k === 'ArrowUp') ref.z -= speed;
-  if (k === 'ArrowDown') ref.z += speed;
+  if (k === 'ArrowUp') ref.rx -= speed / 36;
+  if (k === 'ArrowDown') ref.rx += speed / 36;
+  if (k === 'ArrowLeft') ref.ry -= speed / 36;
+  if (k === 'ArrowRight') ref.ry += speed / 36;
   if (k === 'w') ref.y += speed;
   if (k === 'a') ref.x += speed;
   if (k === 's') ref.y -= speed;
   if (k === 'd') ref.x -= speed;
-  if (k === 'e') ref.ry += speed / 36;
-  if (k === 'q') ref.ry -= speed / 36;
+  if (k === 'e') ref.z += speed;
+  if (k === 'q') ref.z -= speed;
 }, false);
 
 structures.table.label.addEventListener('click', function() {
