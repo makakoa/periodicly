@@ -46,12 +46,12 @@ items.forEach(function(item) {
 });
 
 // Structure logic
-var currentStructure = 'halloffame';
+var currentStructure = 'helix';
 var structures = {
   helix: {
-    radius: 1000,
-    perLoop: 30,
-    stretch: 10,
+    radius: 500,
+    perLoop: 20.3,
+    stretch: 20,
     resetView: function() {
       ref.x = 0;
       ref.y = -(this.stretch * items.length / 2);
@@ -84,7 +84,7 @@ var structures = {
     resetView: function() {
       ref.x = 0;
       ref.y = -(this.rows * 90);
-      ref.z = -1000;
+      ref.z = -2000;
       ref.rx = 0;
       ref.ry = 0;
       ref.rz = 0;

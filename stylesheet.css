@@ -12,6 +12,7 @@ body {
 }
 
 #bottom {
+    z-index: 100000;
     color: white;
     margin: 0;
     position: fixed;
@@ -20,7 +21,12 @@ body {
     right: 15px;
     display: flex;
     justify-content: space-between;
-    opacity: 0.5;
+    opacity: 1;
+}
+
+#bottom h2:hover {
+    cursor: pointer;
+    color: #4278ff;
 }
 
 #main {
